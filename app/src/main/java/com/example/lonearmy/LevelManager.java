@@ -67,6 +67,14 @@ public class LevelManager {
                 index = 2;
                 break;
 
+            case 'j':
+                index = 3;
+                break;
+
+            case 'd':
+                index = 4;
+                break;
+
             default:
                 index = 0;
                 break;
@@ -86,6 +94,12 @@ public class LevelManager {
                 break;
             case 'p':
                 index = 2;
+                break;
+            case 'j':
+                index = 3;
+                break;
+            case 'd':
+                index = 4;
                 break;
             default:
                 index = 0;
@@ -144,6 +158,20 @@ public class LevelManager {
             }// End for j
 
         }// End for i
+
+        //Prepare bitmaps for jumping and dying
+        Player temp = new Player(context, 0,0, pixelsPerMetre);
+        temp.setType('j');
+        bitmapsArray[getBitmapIndex(temp.getType())] = temp.prepareBitmap(context,
+                temp.getBitmapName(),
+                pixelsPerMetre);
+        temp.setType('d');
+        bitmapsArray[getBitmapIndex(temp.getType())] = temp.prepareBitmap(context,
+                temp.getBitmapName(),
+                pixelsPerMetre);
+
+
+
 
     }// End loadMapData()
 

@@ -19,8 +19,8 @@ public class Player extends GameObject {
 
     Player(Context context, float worldStartX, float worldStartY, int pixelsPerMetre) {
 
-        final float HEIGHT = 2;
-        final float WIDTH = 1;
+        final float HEIGHT = 3;
+        final float WIDTH = 2;
 
         setHeight(HEIGHT);
         setWidth(WIDTH);
@@ -77,6 +77,7 @@ public class Player extends GameObject {
 
         // Jumping and gravity
         if (isJumping) {
+            setType('j');
             long timeJumping = System.currentTimeMillis() - jumpTime;
             if (timeJumping < maxJumpTime) {
                 if (timeJumping < maxJumpTime / 2) {
@@ -86,6 +87,7 @@ public class Player extends GameObject {
                 }
             } else {
                 isJumping = false;
+
             }
         } else {
             this.setyVelocity(gravity);
@@ -94,6 +96,7 @@ public class Player extends GameObject {
             // it means the long jumps are less punishing
             // because the player can take off just after the platform
             // They will also be able to cheat by jumping in thin air
+            setType('p');
             isFalling = true;
         }
 
@@ -101,27 +104,27 @@ public class Player extends GameObject {
         this.move(fps);
 
         // Update all the hitboxes to the new location
-// Get the current world location of the player
-// and save them as local variables we will use next
+        // Get the current world location of the player
+        // and save them as local variables we will use next
         Vector2D location = getWorldLocation();
         float lx = location.x;
         float ly = location.y;
-//update the player feet hitbox
+        //update the player feet hitbox
         rectHitboxFeet.top = ly + getHeight() * .95f;
         rectHitboxFeet.left = lx + getWidth() * .2f;
         rectHitboxFeet.bottom = ly + getHeight() * .98f;
         rectHitboxFeet.right = lx + getWidth() * .8f;
-// Update player head hitbox
+        // Update player head hitbox
         rectHitboxHead.top = ly;
         rectHitboxHead.left = lx + getWidth() * .4f;
         rectHitboxHead.bottom = ly + getHeight() * .2f;
         rectHitboxHead.right = lx + getWidth() * .6f;
-// Update player left hitbox
+        // Update player left hitbox
         rectHitboxLeft.top = ly + getHeight() * .2f;
         rectHitboxLeft.left = lx + getWidth() * .2f;
         rectHitboxLeft.bottom = ly + getHeight() * .8f;
         rectHitboxLeft.right = lx + getWidth() * .3f;
-// Update player right hitbox
+        // Update player right hitbox
         rectHitboxRight.top = ly + getHeight() * .2f;
         rectHitboxRight.left = lx + getWidth() * .8f;
         rectHitboxRight.bottom = ly + getHeight() * .8f;
@@ -178,5 +181,24 @@ public class Player extends GameObject {
                 sm.playSound("jump");
             }
         }
+    }
+
+    @Override
+    public void setType(char type) {
+        super.setType(type);
+        switch (type) {
+
+            case 'j':
+                setBitmapName("player_jump");
+                break;
+
+            case'd':
+                setBitmapName("player_death");
+                break;
+
+            default:
+                setBitmapName("player");
+        }
+
     }
 }
