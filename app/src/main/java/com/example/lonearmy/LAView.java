@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
@@ -38,6 +39,7 @@ public class LAView extends SurfaceView implements Runnable {
     private Viewport vp;
     InputController ic;
     SoundManager sm;
+    private PlayerState ps;
 
     LAView(Context context, int screenWidth, int screenHeight) {
         super(context);
@@ -50,9 +52,10 @@ public class LAView extends SurfaceView implements Runnable {
 
         sm = new SoundManager();
         sm.loadSound(context);
+        ps = new PlayerState();
 
         // Load the first level
-        loadLevel("LevelGround", 15, 2);
+        loadLevel("LevelGround", 15, 4);
     } // End of constructor
 
     @Override
@@ -87,6 +90,43 @@ public class LAView extends SurfaceView implements Runnable {
                     if (hit > 0) {
                         //collision! Now deal with different types
                         switch (go.getType()) {
+                            case 'c':
+                                sm.playSound("coin_pickup");
+                                go.setActive(false);
+                                go.setVisible(false);
+                                ps.gotCredit();
+
+                                // Now restore state that was
+                                // removed by collision detection
+                                if (hit != 2) {// Any hit except feet
+                                    lm.player.restorePreviousVelocity();
+                                }
+                                break;
+
+                            case 'u':
+                                sm.playSound("gun_upgrade");
+                                go.setActive(false);
+                                go.setVisible(false);
+                                lm.player.bfg.upgradeRateOfFire();
+                                ps.increaseFireRate();
+
+                                if (hit != 2) {// Any hit except feet
+                                    lm.player.restorePreviousVelocity();
+                                }
+                                break;
+
+                            case 'e':
+                                //extralife
+                                go.setActive(false);
+                                go.setVisible(false);
+                                sm.playSound("extra_life");
+                                ps.addLife();
+
+                                if (hit != 2) {
+                                    lm.player.restorePreviousVelocity();
+                                }
+                                break;
+
                             default:// Probably a regular tile
                                 if (hit == 1) {// Left or right
                                     lm.player.setxVelocity(0);
@@ -117,8 +157,7 @@ public class LAView extends SurfaceView implements Runnable {
             //Reset the players location as the centre of the viewport
             vp.setWorldCentre(lm.gameObjects.get(lm.playerIndex)
                             .getWorldLocation().x,
-                    lm.gameObjects.get(lm.playerIndex)
-                            .getWorldLocation().y);}
+                    vp.getWorldCenter().y);}
     }// End of update()
 
     private void draw() {
@@ -129,7 +168,7 @@ public class LAView extends SurfaceView implements Runnable {
 
             //Clean last frame
             paint.setColor(Color.argb(255, 0, 0, 255));
-            canvas.drawColor(paint.getColor()); //////////////////////////////////////////////////////////////////////// Remember to change this is it doesn't work
+            canvas.drawColor(paint.getColor()); //////////////////////////////////////////////////////////////////////// Remember to change this if it doesn't work
 
             // Draw all the GameObjects
             Rect toScreen2d = new Rect();
@@ -184,6 +223,19 @@ public class LAView extends SurfaceView implements Runnable {
                     }
                 }
 
+            }
+
+            //draw the bullets
+            paint.setColor(Color.argb(255, 255, 255, 255));
+            for (int i = 0; i < lm.player.bfg.getNumBullets(); i++) {
+                // Pass in the x and y coords as usual
+                // then .25 and .05 for the bullet width and height
+                toScreen2d.set(vp.worldToScreen
+                        (lm.player.bfg.getBulletX(i),
+                                lm.player.bfg.getBulletY(i),
+                                .25f,
+                                .05f));
+                canvas.drawRect(toScreen2d, paint);
             }
 
             // Text for debugging
@@ -272,6 +324,10 @@ public class LAView extends SurfaceView implements Runnable {
 
         ic = new InputController(vp.getScreenWidth(),
                 vp.getScreenHeight());
+
+        PointF location = new PointF(px, py);
+        ps.saveLocation(location);
+
         // Set the players location as the world centre
         vp.setWorldCentre(lm.gameObjects.get(lm.playerIndex)
                         .getWorldLocation().x,

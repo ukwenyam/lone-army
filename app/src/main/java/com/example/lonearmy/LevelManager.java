@@ -75,6 +75,18 @@ public class LevelManager {
                 index = 4;
                 break;
 
+            case 'c':
+                index = 5;
+                break;
+
+            case 'u':
+                index = 6;
+                break;
+
+            case 'e':
+                index = 7;
+                break;
+
             default:
                 index = 0;
                 break;
@@ -89,18 +101,35 @@ public class LevelManager {
             case '.':
                 index = 0;
                 break;
+
             case '1':
                 index = 1;
                 break;
+
             case 'p':
                 index = 2;
                 break;
+
             case 'j':
                 index = 3;
                 break;
+
             case 'd':
                 index = 4;
                 break;
+
+            case 'c':
+                index = 5;
+                break;
+
+            case 'u':
+                index = 6;
+                break;
+
+            case 'e':
+                index = 7;
+                break;
+
             default:
                 index = 0;
                 break;
@@ -131,6 +160,7 @@ public class LevelManager {
                             // Add grass to the gameObjects
                             gameObjects.add(new Floor(j, i, c));
                             break;
+
                         case 'p':
                             // Add a player to the gameObjects
                             gameObjects.add(new Player
@@ -142,6 +172,20 @@ public class LevelManager {
                             player = (Player) gameObjects.get(playerIndex);
                             break;
 
+                        case 'c':
+                            // Add a coin to the gameObjects
+                            gameObjects.add(new Coin(j, i, c));
+                            break;
+
+                        case 'u':
+                            // Add a machine gun upgrade to the gameObjects
+                            gameObjects.add(new MachineGunUpgrade(j, i, c));
+                            break;
+
+                        case 'e':
+                            // Add an extra life to the gameObjects
+                            gameObjects.add(new ExtraLife(j, i, c));
+                            break;
                     }// End switch
 
                     // If the bitmap isn't prepared yet

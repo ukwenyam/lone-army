@@ -104,6 +104,9 @@ public class InputController {
 
                         } else if (shoot.contains(x, y)) {
                             //Handle shooting here
+                            if (l.player.pullTrigger()) {
+                                sound.playSound("shoot");
+                            }
 
                         } else if (pause.contains(x, y)) {
                             l.switchPlayingStatus();
@@ -121,6 +124,9 @@ public class InputController {
 
                         } else if (shoot.contains(x, y)) {
                             //Handle shooting here
+                            if (l.player.pullTrigger()) {
+                                sound.playSound("shoot");
+                            }
                         } else if (jump.contains(x, y)) {
                             //Handle more jumping stuff here later
                         }

@@ -1,6 +1,7 @@
 package com.example.lonearmy;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 public class Player extends GameObject {
 
@@ -11,6 +12,9 @@ public class Player extends GameObject {
     private boolean isJumping;
     private long jumpTime;
     private long maxJumpTime = 700;// jump 7 10ths of second
+
+    public MachineGun bfg;
+
 
     RectHitbox rectHitboxFeet;
     RectHitbox rectHitboxHead;
@@ -49,6 +53,8 @@ public class Player extends GameObject {
         setAnimFrameCount(ANIMATION_FRAME_COUNT);
         setAnimated(context, pixelsPerMetre, true);
 
+        bfg = new MachineGun();
+
         setWorldLocation(worldStartX, worldStartY, 0);
 
         rectHitboxFeet = new RectHitbox();
@@ -78,6 +84,7 @@ public class Player extends GameObject {
         // Jumping and gravity
         if (isJumping) {
             setType('j');
+            setAnimFps(8);
             long timeJumping = System.currentTimeMillis() - jumpTime;
             if (timeJumping < maxJumpTime) {
                 if (timeJumping < maxJumpTime / 2) {
@@ -97,8 +104,11 @@ public class Player extends GameObject {
             // because the player can take off just after the platform
             // They will also be able to cheat by jumping in thin air
             setType('p');
+            setAnimFps(12);
             isFalling = true;
         }
+
+        bfg.update(fps, gravity);
 
         // Let's go!
         this.move(fps);
@@ -199,6 +209,24 @@ public class Player extends GameObject {
             default:
                 setBitmapName("player");
         }
+    }
 
+    public boolean pullTrigger() {
+        //Try and fire a shot
+        return bfg.shoot(this.getWorldLocation().x,
+                this.getWorldLocation().y,
+                getFacing(), getHeight());
+    }
+
+    public void restorePreviousVelocity() {
+        if (!isJumping && !isFalling) {
+            if (getFacing() == LEFT) {
+                isPressingLeft = true;
+                setxVelocity(-MAX_X_VELOCITY);
+            } else {
+                isPressingRight = true;
+                setxVelocity(MAX_X_VELOCITY);
+            }
+        }
     }
 }

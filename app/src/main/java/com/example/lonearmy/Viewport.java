@@ -112,4 +112,8 @@ public class Viewport {
         numClipped = 0;
     }
 
+    public Vector2D getWorldCenter() {
+        return currentViewportWorldCentre;
+    }
+
 } // End of Viewport
